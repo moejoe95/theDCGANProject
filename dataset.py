@@ -2,6 +2,7 @@ import glob
 import numpy as np
 from cv2 import cv2
 import tensorflow as tf
+from pathlib import Path
 
 
 def decode_img(img_file, resize):
@@ -14,15 +15,22 @@ def decode_img(img_file, resize):
     return img
 
 
-def get_dataset_files(img_folders, resize=None):
+def get_dataset_files(img_folders, resize=None, recursive=False):
     dataset_images = []
 
     for i, f in enumerate(img_folders):
-        image_files = sorted(glob.glob(f + '/*'))
-        dataset_images += image_files
+        if recursive:
+            for path in Path(f).rglob('*.jpg'):
+                dataset_images.append(str(path))
+        else:
+            image_files = sorted(glob.glob(f + '/*'))
+            dataset_images += image_files
 
+    dataset_images = dataset_images[:100000]
     train_data = []
-    for img_file in dataset_images:
+    for i, img_file in enumerate(dataset_images):
+        if i % 10000 == 0:
+            print('read in ' + str(i))
         img = decode_img(img_file, resize)
         train_data.append(img)
 
@@ -30,8 +38,8 @@ def get_dataset_files(img_folders, resize=None):
     return train_data
 
 
-def get_dataset_folders(img_folders, resize=None):
-    return get_dataset_files(img_folders, resize)
+def get_dataset_folders(img_folders, resize=None, recursive=False):
+    return get_dataset_files(img_folders, resize, recursive)
 
 
 def get_dataset_mnist():

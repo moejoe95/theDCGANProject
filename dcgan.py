@@ -49,8 +49,8 @@ def train(dataset, epochs):
                                  epoch + 1,
                                  seed)
 
-        # Save the model every 15 epochs
-        if (epoch + 1) % 15 == 0:
+        # Save the model every 10 epochs
+        if (epoch + 1) % 10 == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
 
         print('Time for epoch {} is {} sec'.format(epoch + 1, time.time() - start))
@@ -65,7 +65,7 @@ def generate_and_save_images(model, epoch, test_input):
     # This is so all layers run in inference mode (batchnorm).
     predictions = model(test_input, training=False)
 
-    fig = plt.figure(figsize=(4, 4))
+    _ = plt.figure(figsize=(4, 4))
 
     for i in range(predictions.shape[0]):
         sample = cv2.cvtColor(predictions[i, :, :, ].numpy() * .5 + .5, cv2.COLOR_BGR2RGB)
@@ -83,7 +83,7 @@ def display_image(epoch_no):
 
 
 # get data
-train_images = ds.get_dataset_folders(['mgan_dataset'], (64, 64))
+train_images = ds.get_dataset_folders(['lsunbed_dataset'], (64, 64), recursive=True)
 
 # train_images = train_images.reshape(train_images.shape[0], 28, 28, 1).astype('float32')
 train_images = (train_images - .5) / .5  # Normalize the images to [-1, 1]
@@ -96,7 +96,7 @@ for i in range(16):
 plt.show()
 
 BUFFER_SIZE = 60000
-BATCH_SIZE = 128
+BATCH_SIZE = 64
 
 # Batch and shuffle the data
 train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
@@ -108,8 +108,8 @@ generated_image = generator(noise, training=False)
 discriminator = des.make_discriminator_model()
 decision = discriminator(generated_image)
 
-generator_optimizer = tf.keras.optimizers.Adam(1e-4)
-discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+generator_optimizer = tf.keras.optimizers.Adam(0.0002, beta_1=0.5)
+discriminator_optimizer = tf.keras.optimizers.Adam(0.0002, beta_1=0.5)
 
 checkpoint_dir = './training_checkpoints'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
@@ -118,7 +118,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  generator=generator,
                                  discriminator=discriminator)
 
-EPOCHS = 50
+EPOCHS = 10
 noise_dim = 100
 num_examples_to_generate = 16
 
