@@ -4,6 +4,7 @@ import imageio
 import matplotlib.pyplot as plt
 import os
 import time
+import numpy as np
 
 import generator as gen
 import descriminator as des
@@ -83,10 +84,11 @@ def display_image(epoch_no):
 
 
 # get data
-train_images = ds.get_dataset_folders(['lsunbed_dataset'], (64, 64), recursive=True)
+train_images = ds.get_dataset_folders(['lsunbed_dataset'], (128, 128), recursive=True)
 
 # train_images = train_images.reshape(train_images.shape[0], 28, 28, 1).astype('float32')
-train_images = (train_images - .5) / .5  # Normalize the images to [-1, 1]
+np.subtract(train_images, .5, out=train_images)
+np.divide(train_images, .5, out=train_images)
 
 for i in range(16):
     sample = cv2.cvtColor(train_images[i, :, :, ] * .5 + .5, cv2.COLOR_BGR2RGB)
@@ -101,17 +103,17 @@ BATCH_SIZE = 64
 # Batch and shuffle the data
 train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
 
-generator = gen.make_generator_model()
+generator = gen.make_generator_model_big()
 noise = tf.random.normal([1, 100])
 generated_image = generator(noise, training=False)
 
-discriminator = des.make_discriminator_model()
+discriminator = des.make_discriminator_model_big()
 decision = discriminator(generated_image)
 
 generator_optimizer = tf.keras.optimizers.Adam(0.0002, beta_1=0.5)
 discriminator_optimizer = tf.keras.optimizers.Adam(0.0002, beta_1=0.5)
 
-checkpoint_dir = './training_checkpoints_lsun'
+checkpoint_dir = './training_checkpoints_lsun_big'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator_optimizer=discriminator_optimizer,

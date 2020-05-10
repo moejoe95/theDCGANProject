@@ -26,15 +26,15 @@ def get_dataset_files(img_folders, resize=None, recursive=False):
             image_files = sorted(glob.glob(f + '/*'))
             dataset_images += image_files
 
-    dataset_images = dataset_images[:100000]
-    train_data = []
+    dataset_images = dataset_images[:5000]
+    train_data = np.empty((5000, 128, 128, 3), dtype=np.float32)
+
     for i, img_file in enumerate(dataset_images):
         if i % 10000 == 0:
             print('read in ' + str(i))
         img = decode_img(img_file, resize)
-        train_data.append(img)
+        train_data[i] = img
 
-    train_data = np.asarray(train_data)
     return train_data
 
 
