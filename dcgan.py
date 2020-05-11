@@ -98,7 +98,7 @@ for i in range(16):
 plt.show()
 
 BUFFER_SIZE = 60000
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 
 # Batch and shuffle the data
 train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)

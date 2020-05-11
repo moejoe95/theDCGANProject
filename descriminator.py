@@ -45,10 +45,6 @@ def make_discriminator_model_big():
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Conv2D(2048, (5, 5), strides=(2, 2), padding='same'))
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
-
     model.add(layers.Flatten())
     model.add(layers.Dense(1))
 

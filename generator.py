@@ -32,28 +32,28 @@ def make_generator_model():
 
 def make_generator_model_big():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(4*4*2048, use_bias=False, input_shape=(100,)))
+    model.add(layers.Dense(4*4*1024, use_bias=False, input_shape=(100,)))
 
-    model.add(layers.Reshape((4, 4, 2048)))
-    assert model.output_shape == (None, 4, 4, 2048) # Note: None is the batch size
-
-    model.add(layers.Conv2DTranspose(1024, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 8, 8, 1024)
-    model.add(layers.BatchNormalization())
-    model.add(layers.ReLU())
+    model.add(layers.Reshape((4, 4, 1024)))
+    assert model.output_shape == (None, 4, 4, 1024) # Note: None is the batch size
 
     model.add(layers.Conv2DTranspose(512, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 16, 16, 512)
+    assert model.output_shape == (None, 8, 8, 512)
     model.add(layers.BatchNormalization())
     model.add(layers.ReLU())
 
     model.add(layers.Conv2DTranspose(256, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 32, 32, 256)
+    assert model.output_shape == (None, 16, 16, 256)
     model.add(layers.BatchNormalization())
     model.add(layers.ReLU())
 
     model.add(layers.Conv2DTranspose(128, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 64, 64, 128)
+    assert model.output_shape == (None, 32, 32, 128)
+    model.add(layers.BatchNormalization())
+    model.add(layers.ReLU())
+
+    model.add(layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    assert model.output_shape == (None, 64, 64, 64)
     model.add(layers.BatchNormalization())
     model.add(layers.ReLU())
 
